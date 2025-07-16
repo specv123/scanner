@@ -1,0 +1,400 @@
+body {
+    margin: 0;
+    background: #000000;
+    color: #4a90e2;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(0, 150, 255, 0.03) 0px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(90deg, rgba(0, 150, 255, 0.03) 0px, transparent 1px, transparent 40px),
+        radial-gradient(circle at 10% 20%, rgba(0, 100, 255, 0.1) 0%, transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(0, 200, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 40% 40%, rgba(0, 150, 255, 0.05) 0%, transparent 50%),
+        linear-gradient(45deg, rgba(0, 50, 150, 0.02) 0%, transparent 25%, rgba(0, 100, 200, 0.03) 50%, transparent 75%);
+    animation: bgMove 30s linear infinite, atmosphericPulse 10s ease-in-out infinite alternate;
+}
+
+@keyframes bgMove {
+    0% {
+        background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+    }
+
+    100% {
+        background-position: 100px 100px, 100px 100px, 200px 300px, -300px -200px, 150px -150px, 400px 400px;
+    }
+}
+
+@keyframes atmosphericPulse {
+    0% {
+        filter: brightness(1) contrast(1) hue-rotate(0deg);
+        background-size: 40px 40px, 40px 40px, 800px 800px, 600px 600px, 1000px 1000px, 500px 500px;
+    }
+
+    100% {
+        filter: brightness(1.05) contrast(1.02) hue-rotate(5deg);
+        background-size: 42px 42px, 42px 42px, 850px 850px, 650px 650px, 1050px 1050px, 550px 550px;
+    }
+}
+
+.scanner {
+    width: 320px;
+    height: 450px;
+    border: 3px solid #1a4a7a;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    box-shadow:
+        0 0 30px rgba(0, 100, 200, 0.3),
+        inset 0 0 20px rgba(0, 50, 150, 0.2),
+        0 0 50px rgba(0, 150, 255, 0.1);
+    background: linear-gradient(135deg, rgba(0, 20, 40, 0.9), rgba(0, 10, 30, 0.9));
+    border-radius: 20px;
+    transition: all 0.8s ease;
+    overflow: hidden;
+}
+
+.scanner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(0, 150, 255, 0.05) 50%, transparent 70%);
+    animation: shimmer 3s infinite;
+    pointer-events: none;
+}
+
+.scanner::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(0, 150, 255, 0.1), transparent 30deg);
+    animation: rotate 8s linear infinite;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.scanner.active {
+    border-color: #00ccff;
+    box-shadow:
+        0 0 40px #00ccff,
+        inset 0 0 30px rgba(0, 204, 255, 0.3),
+        0 0 80px rgba(0, 204, 255, 0.2);
+    background: linear-gradient(135deg, rgba(0, 40, 80, 0.9), rgba(0, 30, 60, 0.9));
+}
+
+.scanner.scanning-complete::before {
+    animation: none;
+}
+
+.scanner.scanning-complete::after {
+    animation: none;
+}
+
+.scan-line {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, transparent, #4a90e2, transparent);
+    animation: scan 3s infinite;
+    box-shadow: 0 0 20px rgba(74, 144, 226, 0.8);
+}
+
+.scanner.active .scan-line {
+    background: linear-gradient(90deg, transparent, #00ccff, transparent);
+    box-shadow: 0 0 30px rgba(0, 204, 255, 0.9);
+}
+
+.scan-line.stopped {
+    animation: none;
+    opacity: 0;
+}
+
+@keyframes scan {
+    0% {
+        top: 0;
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+.fingerprint {
+    width: 160px;
+    height: 160px;
+    position: relative;
+    opacity: 1;
+    transition: all 0.8s ease;
+    z-index: 2;
+}
+
+.fingerprint svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 10px rgba(74, 144, 226, 0.5));
+}
+
+.scanner.active .fingerprint {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.scanner.active .fingerprint svg {
+    filter: drop-shadow(0 0 20px #00ccff);
+}
+
+.message,
+.access-granted {
+    opacity: 0;
+    transition: all 0.8s ease;
+    text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+}
+
+.message {
+    font-size: 1.4rem;
+    text-align: center;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.scanning-message {
+    color: #808080;
+    font-size: 1.6rem;
+    text-align: center;
+    letter-spacing: 2px;
+    font-weight: bold;
+    margin-top: 25px;
+    opacity: 0;
+    transition: all 0.8s ease;
+    text-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
+}
+
+.scanning-message.hide,
+.message.hide,
+.access-granted.hide {
+    opacity: 0;
+}
+
+.scanning-message.show {
+    opacity: 1;
+    animation: scanningBlink 1s infinite;
+}
+
+.message.show {
+    opacity: 1;
+}
+
+.access-granted.show {
+    opacity: 1;
+    animation: blink 1.5s infinite, pulse 2s infinite;
+}
+
+@keyframes scanningBlink {
+
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.access-granted {
+    opacity: 0;
+    transition: all 0.8s ease;
+    color: #00ff00;
+    font-size: 2rem;
+    margin-top: 25px;
+    text-shadow: 0 0 20px #00ff00;
+    letter-spacing: 3px;
+    font-weight: bold;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.hud-elements {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 0.8rem;
+    color: #4a90e2;
+    text-align: right;
+    opacity: 0.7;
+    line-height: 1.6;
+}
+
+.hud-elements .status {
+    color: #00ccff;
+    font-weight: bold;
+}
+
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #00ccff;
+    border-radius: 50%;
+    animation: float 4s infinite linear;
+    opacity: 0.3;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.3;
+    }
+
+    90% {
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: translateY(-100px) translateX(50px);
+        opacity: 0;
+    }
+}
+
+.energy-waves {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.energy-wave {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border: 1px solid rgba(0, 150, 255, 0.2);
+    border-radius: 50%;
+    animation: expandWave 4s infinite linear;
+}
+
+@keyframes expandWave {
+    0% {
+        transform: scale(0.1) translateX(-50%) translateY(-50%);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(2) translateX(-50%) translateY(-50%);
+        opacity: 0;
+    }
+}
+
+.digital-rain {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.rain-drop {
+    position: absolute;
+    color: rgba(0, 150, 255, 0.1);
+    font-size: 12px;
+    animation: rain 3s infinite linear;
+}
+
+@keyframes rain {
+    0% {
+        transform: translateY(-100px);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.3;
+    }
+
+    90% {
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
